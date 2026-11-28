@@ -88,4 +88,9 @@ public class UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + id));
     }
+
+    @Transactional(readOnly = true)
+    public User requireCurrentUser(Jwt jwt) {
+        return findByKeycloakId(jwt.getSubject());
+    }
 }

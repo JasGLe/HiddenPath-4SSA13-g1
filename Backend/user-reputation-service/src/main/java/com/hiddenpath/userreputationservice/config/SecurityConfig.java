@@ -1,3 +1,4 @@
+
 package com.hiddenpath.userreputationservice.config;
 
 import org.springframework.context.annotation.Bean;
@@ -22,7 +23,11 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(a -> a
-                        .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers(
+                                "/actuator/health",
+                                "/actuator/health/**",
+                                "/actuator/info"
+                        ).permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(o -> o
                         .jwt(j -> j.jwtAuthenticationConverter(jwtAuthConverter())))
@@ -36,7 +41,10 @@ public class SecurityConfig {
             if (realmAccess == null || realmAccess.get("roles") == null) {
                 return List.of();
             }
-            Collection<String> roles = (Collection<String>) realmAccess.get("roles");
+
+            Collection<String> roles =
+                    (Collection<String>) realmAccess.get("roles");
+
             return roles.stream()
                     .map(r -> new SimpleGrantedAuthority("ROLE_" + r))
                     .collect(Collectors.toList());
